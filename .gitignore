@@ -1,0 +1,39 @@
+# Build outputs
+target/
+spark-jobs/target/
+*.class
+*.jar
+
+# Node/Vite
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/*.tsbuildinfo
+
+# Logs and runtime files
+logs/
+*.log
+*.pid
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+src/main/resources/keystore.p12
+target/classes/keystore.p12
+certs/
+*.jks
+*.p12
+*.key
+*.crt
+*.cer
+
+# IDE and OS files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Maven wrapper/local
+.mvn/wrapper/maven-wrapper.jar

@@ -1,0 +1,83 @@
+version: "3.8"
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
+    environment:
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ES_SECURE_PASSWORD:-change_me}
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certs/es01/es01.key
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certs/es01/es01.crt
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certs/ca/ca.crt
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certs/es01/es01.key
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certs/es01/es01.crt
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certs/ca/ca.crt
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ports:
+      - "9200:9200"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/certs:ro
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.3
+    environment:
+      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=${ES_SECURE_PASSWORD:-change_me}
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=/usr/share/kibana/config/certs/ca/ca.crt
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./certs:/usr/share/kibana/config/certs:ro
+
+  spark-master:
+    image: bitnamilegacy/spark:3.5.1
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=yes
+      - SPARK_RPC_AUTHENTICATION_SECRET=${SPARK_AUTH_SECRET:-change_me}
+      - SPARK_RPC_ENCRYPTION_ENABLED=yes
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=yes
+      - SPARK_SSL_ENABLED=yes
+      - SPARK_SSL_KEYSTORE_FILE=/opt/bitnami/spark/certs/spark-keystore.jks
+      - SPARK_SSL_KEYSTORE_PASSWORD=${SPARK_KEYSTORE_PASSWORD:-change_me}
+      - SPARK_SSL_KEY_PASSWORD=${SPARK_KEYSTORE_PASSWORD:-change_me}
+      - SPARK_SSL_TRUSTSTORE_FILE=/opt/bitnami/spark/certs/spark-truststore.jks
+      - SPARK_SSL_TRUSTSTORE_PASSWORD=${SPARK_TRUSTSTORE_PASSWORD:-change_me}
+    ports:
+      - "7077:7077"
+      - "8082:8080"
+    volumes:
+      - ./spark-conf:/opt/bitnami/spark/conf
+      - ./certs:/opt/bitnami/spark/certs:ro
+
+  spark-worker:
+    image: bitnamilegacy/spark:3.5.1
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_RPC_AUTHENTICATION_ENABLED=yes
+      - SPARK_RPC_AUTHENTICATION_SECRET=${SPARK_AUTH_SECRET:-change_me}
+      - SPARK_RPC_ENCRYPTION_ENABLED=yes
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=yes
+      - SPARK_SSL_ENABLED=yes
+      - SPARK_SSL_KEYSTORE_FILE=/opt/bitnami/spark/certs/spark-keystore.jks
+      - SPARK_SSL_KEYSTORE_PASSWORD=${SPARK_KEYSTORE_PASSWORD:-change_me}
+      - SPARK_SSL_KEY_PASSWORD=${SPARK_KEYSTORE_PASSWORD:-change_me}
+      - SPARK_SSL_TRUSTSTORE_FILE=/opt/bitnami/spark/certs/spark-truststore.jks
+      - SPARK_SSL_TRUSTSTORE_PASSWORD=${SPARK_TRUSTSTORE_PASSWORD:-change_me}
+    depends_on:
+      - spark-master
+    volumes:
+      - ./spark-conf:/opt/bitnami/spark/conf
+      - ./certs:/opt/bitnami/spark/certs:ro
+
+volumes:
+  es-data:

@@ -1,0 +1,23 @@
+server:
+  port: ${SERVER_PORT:8083}
+  ssl:
+    enabled: ${SSL_ENABLED:true}
+    key-store: ${SSL_KEY_STORE:classpath:keystore.p12}
+    key-store-password: ${SSL_KEY_STORE_PASSWORD:changeit}
+    key-store-type: ${SSL_KEY_STORE_TYPE:PKCS12}
+
+app:
+  elasticsearch:
+    enabled: ${ES_ENABLED:true}
+    url: ${ES_URL:https://localhost:9200}
+    index: ${ES_INDEX:medical_records}
+    timeout-seconds: ${ES_TIMEOUT_SECONDS:5}
+    username: ${ES_USERNAME:elastic}
+    password: ${ES_PASSWORD:change_me}
+    ca-cert-path: ${ES_CA_CERT_PATH:./certs/ca/ca.crt}
+  spark:
+    enabled: ${SPARK_ENABLED:true}
+    submit: ${SPARK_SUBMIT:scripts/spark-submit-wrapper.cmd}
+    master: ${SPARK_MASTER:local[*]}
+    job-jar: ${SPARK_JOB_JAR:./spark-jobs/target/record-reindex-job.jar}
+    app-name: ${SPARK_APP_NAME:hospital-reindex-job}

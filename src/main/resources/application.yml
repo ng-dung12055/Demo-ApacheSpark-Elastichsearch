@@ -1,0 +1,46 @@
+server:
+  port: ${SERVER_PORT:8081}
+  ssl:
+    enabled: ${SSL_ENABLED:false}
+    key-store: ${SSL_KEY_STORE:classpath:keystore.p12}
+    key-store-password: ${SSL_KEY_STORE_PASSWORD:changeit}
+    key-store-type: PKCS12
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3307/hospitaldb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:change_me}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+app:
+  crypto:
+    enabled: true
+  jwt:
+    secret: ${JWT_SECRET:ChangeThisJwtSecretToAtLeast32CharsLong}
+    expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}
+  elasticsearch:
+    enabled: ${ES_ENABLED:true}
+    url: ${ES_URL:http://localhost:9200}
+    index: ${ES_INDEX:medical_records}
+    timeout-seconds: ${ES_TIMEOUT_SECONDS:3}
+    username: ${ES_USERNAME:}
+    password: ${ES_PASSWORD:}
+    ca-cert-path: ${ES_CA_CERT_PATH:}
+  spark:
+    enabled: ${SPARK_ENABLED:false}
+    submit: ${SPARK_SUBMIT:scripts/spark-submit-wrapper.cmd}
+    master: ${SPARK_MASTER:local[*]}
+    job-jar: ${SPARK_JOB_JAR:./spark-jobs/target/record-reindex-job.jar}
+    app-name: ${SPARK_APP_NAME:hospital-reindex-job}
+
+logging:
+  level:
+    org.springframework.security: DEBUG
