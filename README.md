@@ -104,6 +104,8 @@ The job artifact is generated at `spark-jobs/target/record-reindex-job.jar`.
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Roadmap](docs/ROADMAP.md)
+- [Contributing](CONTRIBUTING.md)
+- [Changelog](CHANGELOG.md)
 - [Security setup](docs/SECURITY_SETUP.md)
 - [Evaluation notes](docs/EVALUATION.md)
 - [Research summary](docs/REPORT.md)
